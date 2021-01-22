@@ -1,6 +1,6 @@
 # SSP (Disulfide Bond Analysis Tool)
 
-_Wong and Hogg_ (2010) Analysis of disulfide bonds in protein structures. **J Thromb Haemost** 8:2345 (https://doi.org/10.1111/j.1538-7836.2010.03894.x)
+Wong and Hogg (2010) **Analysis of disulfide bonds in protein structures.** _J Thromb Haemost_ 8:2345 (https://doi.org/10.1111/j.1538-7836.2010.03894.x)
 
 This repository contains the SSP (disulfide bond analysis tool) python web application, the webpage and a difficult to find precompile apache module for mod_wsgi.  
   
