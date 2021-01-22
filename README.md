@@ -1,7 +1,6 @@
 # SSP
 Disulfide Bond Analysis Tool
 
-*Setting up SSP*
 This repository contains the SSP (disulfide bond analysis tool) python web application, the webpage and a difficult to find precompile apache module for mod_wsgi.
 
 # Setting up SSP tool
