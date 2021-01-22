@@ -2,7 +2,7 @@
 
 This repository contains the SSP (disulfide bond analysis tool) python web application, the webpage and a difficult to find precompile apache module for mod_wsgi.  
   
-Requirements:
+**Requirements:**
 - Python 2.7
 - XAMPP 32 bit
 
@@ -39,7 +39,7 @@ Paths in scripts and files that have to be modified include:
 13. setup apache httpd.conf to load mod_wsgi and access appropriate directories (see example included in SSP zip package).
 14. Start up apache. Should be able to access the SSP tool from a browser using https://localhost/SSP
 
-# Setting up SSP webpage
+## Setting up SSP webpage
 15. Unpack disulfideanalysis (for example to C:\htdocs\disulfideanalyis).
 16. Change URL path to point to SSP web tool in search.html line 56
 
