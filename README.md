@@ -1,7 +1,7 @@
-# SSP
-Disulfide Bond Analysis Tool
+# SSP (Disulfide Bond Analysis Tool)
 
 This repository contains the SSP (disulfide bond analysis tool) python web application, the webpage and a difficult to find precompile apache module for mod_wsgi.  
+  
 Requirements:
 - Python 2.7
 - XAMPP 32 bit
@@ -13,7 +13,8 @@ Requirements:
  - ../Errors
  - ../upload
  - ../../pdb_files
- - ../../pdb_files/dsspout  
+ - ../../pdb_files/dsspout 
+   
 Other directory locations can be used but more paths would have to be modified in the scripts.  
 Paths in scripts and files that have to be modified include:
  - absolute_path_of_dssp_files
