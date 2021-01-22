@@ -1,0 +1,134 @@
+###############################################################################
+# Program name: calc.py
+# Version 3
+#
+# Revision log:
+# 27-08-2006    Fixed rounding error in angle
+#
+# Date: 23 August 2006
+#
+###############################################################################
+import math
+
+# vect - creates a vector b-a
+
+def vect(a,b):
+   v = []
+   if len(a) != len(b):
+      print "calc.py Error: Function vect, sizes of lists not equal"
+   else:
+      for i in range(len(a)):
+         v.append(b[i]-a[i])
+   return v
+
+# dotprod - finds the dot product between two vectors
+
+def dotprod(a,b):
+   t = 0
+   if len(a)!=len(b):
+      print "calc.py Error: Function angle, sizes of lists not equal"
+   for i in range(len(a)):
+      t = t+a[i]*b[i]
+   return t
+
+# crossprod - finds the cross product of two vectors
+   
+def crossprod(a,b):
+   if (len(a) != 3) or (len(b) != 3):
+      print "calc.py Error: Cross product only works in R^3!"
+   else:
+      return [a[1]*b[2]-a[2]*b[1],-a[0]*b[2]+a[2]*b[0],a[0]*b[1]-a[1]*b[0]]
+
+# angle - determines the angle between two vectors
+
+def angle(a,b):
+   val = dotprod(a,b) / math.sqrt(dotprod(a,a)*dotprod(b,b))
+   
+   # There was a rounding error with the arguments
+   # a = [-0.00022799999999973536, 0.005367999999999872, 0.0052539999999994206]
+   # b = [0.00022799999999973536, -0.0053679999999998729, -0.0052539999999994223]
+   # where val = -1.0000000000000002
+   # which made math.acos complain
+   # the following hopefully is good enough to eliminate the rounding errors
+   
+   if abs(val - round(val)) < 1e-10:
+      val = round(val)
+   return math.acos(val)
+
+
+# det - finds the determinant of the augmented matrix (a|b|c).
+
+def det(a,b,c):
+   return (a[0]*(b[1]*c[2]-c[1]*b[2]) - a[1]*(b[0]*c[2]-b[2]*c[0]) + a[2]*(b[0]*c[1] - c[0]*b[1]))
+
+# torsion2 - determines the torsional angle between the four vectors
+
+def torsion2(a,b,c,d):
+   #print vect(b,a),vect(b,c),vect(c,d),vect(c,b)
+   x = abs(math.pi - abs(angle(crossprod(vect(b,a),vect(b,c)),crossprod(vect(c,d),vect(c,b)))))
+   determinant = det(vect(b,a),vect(b,c),vect(c,d))
+   sign = 1.0
+   if determinant < 0:
+      sign = -1.0
+   return -x * sign
+      
+# strain2 - calculates the torsional strain of a disulfide bond, ..-S1-S2-..
+#           takes in a list of 8 position vectors for the atoms
+#           N1,CA1,CB1,SG1,SG2,CB2,CA2,N2, IN THAT ORDER
+#           calculates the angles chi1,..,chi5 using this information
+#           and substitutes into the following formula
+
+# E(kcal/mol) = 2.0(1 + cos(3X1)) + 2.0(1 + cos (3X'1)) + 1.0(1 + cos(3X2)) +
+#               1.0(1 + cos(3X'2)) + 3.5(1 + cos(2X3)) + 0.6(1 + cos(3X3))
+#
+# Please refer to Katz, B.A. and Kossiakoff, A. (1986) The crystallographically
+# determined structures of atypical strained disulfides engineered into subtilism
+# J. Biol. Chem. 261, 15480-15485.
+
+def strain2(c):
+   if len(c) != 8:
+      print "calc.py Error: Input of function strain2 is a list of length eight, entries being elements of R^3"
+   else:
+      cc = []
+   for i in range(5):
+#      print [c[i],c[i+1],c[i+2],c[i+3]]
+      cc.append(torsion2(c[i],c[i+1],c[i+2],c[i+3]))
+   # cc[0] = CHI1, cc[1] = CHI2, cc[2] = CHI3, cc[3] = CHI2', cc[4] = CHI1', s = kJ/mol
+   s = (2.0*(1.0+math.cos(3.0*cc[0]))+2.0*(1.0+math.cos(3.0*cc[4]))+(1.0+math.cos(3.0*cc[1]))+(1.0+math.cos(3*cc[3]))+3.5*(1.0+math.cos(2.0*cc[2]))+ 0.6*(1.0+math.cos(3.0*cc[2])))*4.184
+   return [s, cc]
+
+CRD = 30   #position start for coordinates in ATOM line = 30
+def coord(line):
+    return [float(line[CRD+8*i:CRD+8*(i+1)]) for i in range(3)]
+
+def distance_sq(line1,line2): #takes in ATOM lines from pdb files
+   return sum([(float(line1[CRD+8*i:CRD+8*(i+1)])-float(line2[CRD+8*i:CRD+8*(i+1)]))**2 for i in range(3)])
+
+def classify(angles):
+    chi1,chi2,chi3,chi2_,chi1_ = angles
+    polarity = ""    
+    if chi1 > 0 and chi1_ > 0:
+        polarity = ".+"
+    elif chi1 < 0 and chi1_ < 0:
+        polarity = ".-"
+    elif chi2 > 0 and (((chi2 > 0 and chi3 > 0 and chi2_ < 0) or (chi2 < 0 and chi3 > 0 and chi2_ > 0)) or
+                            ((chi2 < 0 and chi3 < 0 and chi2_ > 0) or (chi2 > 0 and chi3 < 0 and chi2_ < 0))):
+        polarity =  ".-/+"
+    else:
+        polarity = ".+/-"
+
+    if chi2 < 0 and chi3 < 0 and chi2_ < 0:
+        classification = "LHSpiral"
+    elif(chi2 > 0 and chi3 > 0 and chi2_ < 0) or (chi2 < 0 and chi3 > 0 and chi2_ > 0):
+        classification = "RHHook"
+    elif(chi2 < 0 and chi3 < 0 and chi2_ > 0) or (chi2 > 0 and chi3 < 0 and chi2_ < 0):
+        classification = "LHHook"
+    elif chi2 > 0 and chi3 > 0 and chi2_ > 0:
+        classification = "RHSpiral"
+    elif chi2 < 0 and chi3 > 0 and chi2_ < 0:
+        classification = "RHStaple"
+    elif chi2 > 0 and chi3 < 0 and chi2_ > 0:
+        classification = "LHStaple"
+    else:
+        classification = "NOT CLASSIFIED"
+    return polarity+classification     
