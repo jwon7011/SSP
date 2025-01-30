@@ -26,9 +26,12 @@ Paths in scripts and files that have to be modified include:
  - index.wsgi - line 5, 108, 146, 407, 422, 536
  - run.py - line 18, 33, 38, 59, 106, 107, 234
 
+Also change new PDB download URL in download_from_rscb2.py:
+https://files.wwpdb.org/pub/pdb/data/structures/all/pdb/
+
 3. Install Python2.7 (32 bit)
 4. pip2 install pyExcelerator
-5. Install wget for windows (http://gnuwin32.sourceforge.net/packages/wget.htm). Make sure that it is accessible from the command prompt.
+5. Install wget for windows ([http://gnuwin32.sourceforge.net/packages/wget.htm](https://eternallybored.org/misc/wget/)). Make sure that it is accessible from the command prompt.
 6. Install 7zip (https://www.7-zip.org/download.html). Make sure 7z.exe is accessible from the command prompt
 7. run UpdatePDB2.bat from a command prompt (this will take a while)
 8. run run_all.bat from a command prompt (this will take a hour or more on the first run). It is possible that it doesn't run to completion because it found some errors in a PDB file. This could be due to a corrupt download in the last step or a real invalid PDB file. For the latter, the file has to be removed from the PDB directory. This can be added to the top of the run_all.bat file, a copy of examples are already there. If you get a message that the task has been completed successfully then it means the SSP tool is setup correctly.
